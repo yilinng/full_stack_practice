@@ -33,4 +33,9 @@ sequenceDiagram
     deactivate server
 
     Note right of browser: The browser executes the callback function that renders the notes
+<<<<<<< HEAD:part0/create_a_similar_diagram/new.md
+=======
+
+   
+>>>>>>> 861b45421c62322a11fcf63ae068ee84bbfce973:new.md
 ```
