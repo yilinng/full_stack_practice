@@ -1,10 +1,14 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
 
-blogsRouter.get("/", (request, response) => {
+blogsRouter.get("/", async (request, response) => {
+  const blogs = await Blog.find({});
+  response.json(blogs);
+  /*
   Blog.find({}).then((blogs) => {
     response.json(blogs);
   });
+  */
 });
 
 blogsRouter.get("/:id", (request, response, next) => {
@@ -22,19 +26,11 @@ blogsRouter.get("/:id", (request, response, next) => {
 });
 
 blogsRouter.post("/", (request, response, next) => {
-  const { title, auther, url, likes } = request.body;
-
-  console.log("post request body", request.body);
-
-  if (title === undefined || auther === undefined || url === undefined) {
-    return response
-      .status(400)
-      .json({ error: "title or auther or url missing" });
-  }
+  const { title, author, url, likes } = request.body;
 
   const new_blog = new Blog({
     title: title,
-    auther: auther,
+    author: author,
     url: url,
     likes: likes || 0,
   });
@@ -52,7 +48,7 @@ blogsRouter.delete("/:id", async (request, response, next) => {
   console.log("id", id);
   try {
     await Blog.deleteOne({ _id: id });
-    response.json("delete success.");
+    response.status(204).json("delete success.");
   } catch (error) {
     next(error);
   }
