@@ -1,54 +1,63 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
+const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 blogsRouter.get("/", async (request, response) => {
-  const blogs = await Blog.find({});
+  const blogs = await Blog.find({}).populate("user");
   response.json(blogs);
-  /*
-  Blog.find({}).then((blogs) => {
-    response.json(blogs);
-  });
-  */
 });
 
-blogsRouter.get("/:id", (request, response, next) => {
-  const id = request.params.id;
-
-  Blog.findById(id)
-    .then((blog) => {
-      if (blog) {
-        response.json(blog);
-      } else {
-        response.status(404).send({ error: "unknown endpoint" });
-      }
-    })
-    .catch((error) => next(error));
+blogsRouter.get("/:id", getBlog, async (request, response) => {
+  const blog = request.blog;
+  response.json(blog);
 });
 
-blogsRouter.post("/", (request, response, next) => {
+blogsRouter.post("/", async (request, response) => {
   const { title, author, url, likes } = request.body;
 
-  const new_blog = new Blog({
+  console.log("request.token", request.token);
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: "token invalid" });
+  }
+  const user = await User.findById(decodedToken.id);
+
+  const blog = new Blog({
     title: title,
     author: author,
     url: url,
     likes: likes || 0,
+    user: user.id,
   });
 
-  new_blog
-    .save()
-    .then((savedBlog) => {
-      response.status(201).json(savedBlog);
-    })
-    .catch((error) => next(error));
+  const savedBlog = await blog.save();
+  user.blogs = user.blogs.concat(savedBlog._id);
+  await user.save();
+
+  response.json(savedBlog);
 });
 
-blogsRouter.delete("/:id", async (request, response, next) => {
+blogsRouter.delete("/:id", getBlog, async (request, response, next) => {
   const id = request.params.id;
-  console.log("id", id);
+  const blog = request.blog;
+
+  console.log("request.token", request.token);
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: "token invalid" });
+  }
+
+  const userid = decodedToken.id;
   try {
-    await Blog.deleteOne({ _id: id });
-    response.status(204).json("delete success.");
+    if (blog.user.toString() === userid.toString()) {
+      await Blog.deleteOne({ _id: id });
+      response
+        .status(204)
+        .json(
+          `deleting a blog is possible only if the token sent with the request is the same as that of the blog's creator`
+        );
+    }
   } catch (error) {
     next(error);
   }
@@ -75,5 +84,20 @@ blogsRouter.put("/:id", async (request, response, next) => {
     })
     .catch((error) => next(error));
 });
+
+async function getBlog(request, response, next) {
+  let blog;
+  try {
+    blog = await Blog.findById(request.body._id);
+    if (blog === null) {
+      return response.status(404).json({ message: "Cannot find blog" });
+    }
+  } catch (err) {
+    return response.status(500).json({ message: err.message });
+  }
+
+  request.blog = blog;
+  next();
+}
 
 module.exports = blogsRouter;
