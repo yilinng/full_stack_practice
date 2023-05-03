@@ -6,10 +6,41 @@ const app = require("../app");
 const api = supertest(app);
 const Blog = require("../models/blog");
 const helper = require("./test_helper");
+const bcrypt = require("bcrypt");
+const User = require("../models/user");
+
+let token = "";
 
 beforeEach(async () => {
   await Blog.deleteMany({});
-  await Blog.insertMany(helper.initialBlogs);
+  await User.deleteMany({});
+  //await Blog.insertMany(helper.initialBlogs);
+
+  const passwordHash = await bcrypt.hash("test", 10);
+  const user = new User({ username: "test", passwordHash });
+
+  await user.save();
+  //user login
+  await api
+    .post("/api/login")
+    .send({ username: "test", password: "test" })
+    .then((data) => {
+      console.log("data from login...", data._body.token);
+      token = data._body.token;
+    });
+  //user login and update userid
+
+  const initialBlogs = {
+    title: "React patterns",
+    author: "Michael Chan",
+    url: "https://reactpatterns.com/",
+    likes: 7,
+  };
+
+  await api
+    .post("/api/blogs")
+    .set("Authorization", `Bearer ${token}`)
+    .send(initialBlogs);
 });
 
 describe("when there is initially some blogs saved", () => {
@@ -32,7 +63,7 @@ describe("when there is initially some blogs saved", () => {
     // console.log("response.body", response.body);
 
     const titles = response.body.map((r) => r.title);
-    expect(titles).toContain("Go To Statement Considered Harmful");
+    expect(titles).toContain("React patterns");
   });
 
   test("a specific blog is within the returned blog", async () => {
@@ -44,18 +75,20 @@ describe("when there is initially some blogs saved", () => {
   });
 });
 
-describe("viewing a specificblog", () => {
+describe("viewing a specific blog", () => {
   test("succeeds with a valid id", async () => {
     const blogsAtStart = await helper.blogsInDb();
-
-    const blogToView = blogsAtStart[0];
+    const blogToView = blogsAtStart[blogsAtStart.length - 1];
 
     const resultBlog = await api
       .get(`/api/blogs/${blogToView.id}`)
       .expect(200)
       .expect("Content-Type", /application\/json/);
 
-    expect(resultBlog.body).toEqual(blogToView);
+    expect(resultBlog.body.title).toEqual(blogToView.title);
+    expect(resultBlog.body.author).toEqual(blogToView.author);
+    expect(resultBlog.body.url).toEqual(blogToView.url);
+    expect(resultBlog.body.likes).toEqual(blogToView.likes);
   });
 
   test("fails with statuscode 404 if blog does not exist", async () => {
@@ -71,7 +104,7 @@ describe("viewing a specificblog", () => {
   });
 });
 
-describe("addition of a new note", () => {
+describe("addition of a new blog", () => {
   test("succeeds with valid data", async () => {
     const init_blog = {
       title: "Type wars",
@@ -82,12 +115,13 @@ describe("addition of a new note", () => {
 
     await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(init_blog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
   });
 
-  test("likes property is missing from the request,", async () => {
+  test("likes property is missing from the request, use default value", async () => {
     const init_blog = {
       title: "TDD harms architecture",
       author: "Robert C. Martin",
@@ -96,6 +130,7 @@ describe("addition of a new note", () => {
 
     await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(init_blog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
@@ -112,16 +147,23 @@ describe("addition of a new note", () => {
       author: "Robert C. Martin",
     };
 
-    await api.post("/api/blogs").send(init_blog).expect(400);
+    await api
+      .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
+      .send(init_blog)
+      .expect(400);
   });
 });
 
 describe("deletion of a blog", () => {
   test("succeeds with status code 204 if id is valid", async () => {
     const blogsAtStart = await helper.blogsInDb();
-    const blogToDelete = blogsAtStart[0];
+    const blogToDelete = blogsAtStart[blogsAtStart.length - 1];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
 
@@ -130,6 +172,30 @@ describe("deletion of a blog", () => {
     const titles = blogsAtEnd.map((r) => r.title);
 
     expect(titles).not.toContain(blogToDelete.title);
+  });
+});
+
+describe("update of a blog", () => {
+  test("succeeds with status code 200 if id is valid", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[blogsAtStart.length - 1];
+
+    const update_blog = {
+      title: "update title",
+      author: "update author",
+    };
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send(update_blog)
+      .expect(200);
+
+    const blogsAtEnd = await helper.blogsInDb();
+
+    const titles = blogsAtEnd.map((r) => r.title);
+
+    expect(titles).toContain(update_blog.title);
   });
 });
 

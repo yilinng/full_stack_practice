@@ -1,8 +1,13 @@
 const bcrypt = require("bcrypt");
 const usersRouter = require("express").Router();
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 usersRouter.get("/", async (request, response) => {
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: "token invalid" });
+  }
   const users = await User.find({}).populate("blogs");
   response.json(users);
 });
