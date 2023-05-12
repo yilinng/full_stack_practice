@@ -75,6 +75,7 @@ describe("when there is initially some blogs saved", () => {
   });
 });
 
+//https://stackoverflow.com/questions/57435597/why-does-mongoose-return-object-ids-in-the-form-of-an-object-with-an-id-as-a-bu
 describe("viewing a specific blog", () => {
   test("succeeds with a valid id", async () => {
     const blogsAtStart = await helper.blogsInDb();

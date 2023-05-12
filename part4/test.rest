@@ -1,12 +1,13 @@
-POST http://localhost:3001/api/blogs
+POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpZCI6IjY0NGNiZDEwNTcyOWQxNzg3NmM5NzlkNSIsImlhdCI6MTY4MzAxNzA5OCwiZXhwIjoxNjgzMDIwNjk4fQ.8Cwj0FkL0Oqs7pFiGtwVufvRx15-e2gfwqzWMYd6duM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpZCI6IjY0NGNiZDEwNTcyOWQxNzg3NmM5NzlkNSIsImlhdCI6MTY4Mzg2MDY5NiwiZXhwIjoxNjgzODY0Mjk2fQ.V-HHno8aP2VBirQTElpUazlG9PuDFFDTmDRRcWp8UMs
 
 {
-  "title":"test token1",
+  "title":"title by test",
   "author": "third test",
   "url":"test@test.com",
-  "userId": "644cbd105729d17876c979d5"
+  "userId": "644cbd105729d17876c979d5",
+  "likes": "true"
 }
 ###
 GET http://localhost:3001/api/blogs
@@ -16,13 +17,13 @@ GET http://localhost:3001/api/blogs
 GET http://localhost:3001/api/blogs/644cbd315729d17876c979da
 
 ###
-POST http://localhost:3001/api/users
+POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-  "username": "test",
-  "name": "test name",
-  "password": "test"
+  "username": "test12",
+  "name": "tes12 name",
+  "password": "test12"
 }
 
 ###
@@ -32,7 +33,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc
 
 
 ###
-POST http://localhost:3001/api/login
+POST http://localhost:3003/api/login
 Content-Type: application/json
 
 {
@@ -45,11 +46,10 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpZCI6IjY0NGNiZDEwNTcyOWQxNzg3NmM5NzlkNSIsImlhdCI6MTY4MzA4Mzc3NywiZXhwIjoxNjgzMDg3Mzc3fQ.QxIaXp9yRtGNEY-5HLhEnQo3bH9kdVGRKHSrndBOd_s
 
 ###
-PUT http://localhost:3001/api/blogs/644cbd315729d17876c979da
+PUT http://localhost:3003/api/blogs/645365671c46c7fad3c79e09
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpZCI6IjY0NGNiZDEwNTcyOWQxNzg3NmM5NzlkNSIsImlhdCI6MTY4MzA4Mzc3NywiZXhwIjoxNjgzMDg3Mzc3fQ.QxIaXp9yRtGNEY-5HLhEnQo3bH9kdVGRKHSrndBOd_s
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpZCI6IjY0NGNiZDEwNTcyOWQxNzg3NmM5NzlkNSIsImlhdCI6MTY4MzE5MDY3MSwiZXhwIjoxNjgzMTk0MjcxfQ.V9QGImhA_h1_hJINeIdgdhJz53kYAbbeXRoioC1hvE0
 
 {
-  "title":"test put action",
-  "author": "test update..."
+  "likes":"false"
 }
