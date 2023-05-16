@@ -1,0 +1,42 @@
+.message {
+  color: green;
+  border: 2px solid green;
+  border-radius: 10px;
+  background-color: #eee;
+  padding: 10px;
+}
+
+.error {
+  color: red;
+  border: 2px solid red;
+  border-radius: 10px;
+  background-color: #eee;
+  padding: 10px;
+}
+
+.no_message {
+  visibility: hidden;
+  border: 2px solid orange;
+  border-radius: 10px;
+  background-color: #eee;
+  padding: 10px;
+}
+
+.likedBtn {
+  background-color: '#F0F8FF';
+  color: '#00008B';
+  font-weight: 700;
+  border: '1px solid #F0F8FF';
+  font-size: '20px';
+  border-radius: '10px';
+
+}
+
+.likeBtn {
+   background-color: '#00008B';
+  color: '#F0F8FF';
+  font-weight: 700;
+  border: '1px solid #F0F8FF';
+  font-size: '20px';
+  border-radius: '10px';
+}
