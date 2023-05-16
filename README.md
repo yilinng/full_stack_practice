@@ -1,2 +1,2 @@
 # full_stack_practice
-(https://fullstackopen.com/en/about)
+This site was built using [fullstackopen course)](https://fullstackopen.com/en/about)
