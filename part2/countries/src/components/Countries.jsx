@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 
-export default function Countries({ handleFilter, countries }) {
+export default function Countries({ filterByName, countries }) {
   const [show, setShow] = useState("");
 
   const handleShow = (id) => {
-    console.log(id);
     const filterById = countries.filter((country, index) => id === index);
     console.log("filterById ", filterById);
     setShow(filterById[0]);
@@ -40,8 +39,8 @@ export default function Countries({ handleFilter, countries }) {
             <h4>wind 1.34 m/s</h4>
           </div>
         </div>
-      ) : handleFilter().length === 1 ? (
-        handleFilter().map((country, index) => (
+      ) : filterByName.length === 1 ? (
+        filterByName.map((country, index) => (
           <div key={index}>
             <h3>{country.name.common}</h3>
             <h3>area {country.area}</h3>
@@ -59,8 +58,9 @@ export default function Countries({ handleFilter, countries }) {
             </div>
           </div>
         ))
-      ) : (
-        handleFilter().map((country, index) => (
+        ) : (
+          filterByName.length < 1 ?  <h3>not found....</h3>:  
+          filterByName.map((country, index) => (
           <div key={index}>
             <h3>{country.name.common}</h3>
             <button type="button" onClick={() => handleShow(index)}>
