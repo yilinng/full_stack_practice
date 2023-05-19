@@ -1,61 +1,63 @@
-import { useState, useEffect } from 'react'
+import { useState, useContext } from 'react'
+import NotificationContext from './notificationContext'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
 import Login from './components/Login'
 import blogService from './services/blogs'
-import userService from './services/users'
+import Message from './components/Message'
 import './index.css'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null)
-  const [username, setUserName] = useState('')
-  const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('')
-  const [error, setError] = useState('')
+  const [notification, dispatch] = useContext(NotificationContext)
+  const queryClient = useQueryClient()
+
   const [createVisible, setCreateVisible] = useState(false)
   const [createBlogSuccess, setCreateBlogSuccess] = useState(false)
+  const [message, setMessage] = useState('')
+  const [err, setErr] = useState('')
 
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    console.log('username', username)
-    console.log('password', password)
-
-    const pass_user = {
-      username,
-      password,
-    }
-
-    userService
-      .logIn(pass_user)
-      .then((response) => {
-        console.log('response', response)
-
-        setUser(response)
-        localStorage.setItem('token', response.token)
-      })
-      .catch((e) => {
-        console.log('error', e)
-        setError(e.response.data.error)
-        setTimeout(() => {
-          setError(null)
-        }, 5000)
-      })
+  const hideWhenVisible = {
+    display: createVisible ? 'none' : '',
+  }
+  const showWhenVisible = {
+    display: createVisible ? '' : 'none',
   }
 
   const handleLogout = () => {
-    console.log('handleLogout')
-    setUser(null)
-    localStorage.removeItem('token')
-  }
+    // console.log('handleLogout')
 
-  const getBlogs = () => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    const token = localStorage.getItem('token')
+
+    dispatch({
+      type: 'LOGOUT_SUCCESS',
+      payload: token,
+    })
+
+    localStorage.removeItem('token')
   }
 
   const sortBlogs = () => {
     return blogs.sort((a, b) => b.likes.length - a.likes.length)
   }
+
+  const newBlogMutation = useMutation(blogService.createItem, {
+    onSuccess: (newBlog) => {
+      const blogs = queryClient.getQueryData('blogs')
+      queryClient.setQueryData('blogs', blogs.concat(newBlog))
+      dispatch({
+        type: 'SUCCESS',
+        payload: `a new blog ${newBlog.title} by ${newBlog.author} added`,
+      })
+
+      setTimeout(() => {
+        dispatch({
+          type: 'CLEAR',
+        })
+        setCreateBlogSuccess(false)
+      }, 5000)
+    },
+  })
 
   const handleCreate = (event, title, author, url) => {
     event.preventDefault()
@@ -65,69 +67,33 @@ const App = () => {
       url,
     }
 
-    blogService.createItem(new_blog).then((response) => {
-      console.log('response', response)
-      setMessage(`a new blog ${title} by ${author} added`)
-      setCreateBlogSuccess(true)
-
-      setTimeout(() => {
-        setMessage(null)
-        setCreateBlogSuccess(false)
-      }, 5000)
-
-      getBlogs()
-    })
+    newBlogMutation.mutate(new_blog)
   }
 
-  const handleBlogLike = (blog, checkLike, title, author) => {
+  const updateBlogMutation = useMutation(blogService.updateItem, {
+    onSuccess: (updateBlog) => {
+      //const blogs = queryClient.getQueryData('blogs')
+      dispatch({
+        type: 'SUCCESS',
+        payload: `a new blog ${updateBlog.title} by ${updateBlog.author} updated`,
+      })
+
+      setTimeout(() => {
+        dispatch({
+          type: 'CLEAR',
+        })
+        setCreateBlogSuccess(false)
+      }, 5000)
+    },
+  })
+
+  const handleBlogLike = (blog, checkLike) => {
     console.log('handleBlogLike', blog, checkLike())
 
     if (checkLike()) {
-      blogService
-        .updateItem(blog.id, {
-          likes: 'false',
-        })
-        .then((response) => {
-          console.log('response', response)
-          setMessage(`a new blog ${title} by ${author} updated`)
-
-          setTimeout(() => {
-            setMessage(null)
-          }, 5000)
-
-          getBlogs()
-        })
-        .catch((e) => {
-          console.error(e)
-          setError(e.response.data.error)
-
-          setTimeout(() => {
-            setError(null)
-          }, 5000)
-        })
+      updateBlogMutation.mutate({ ...blog, likes: 'false' })
     } else {
-      blogService
-        .updateItem(blog.id, {
-          likes: 'true',
-        })
-        .then((response) => {
-          console.log('response', response)
-          setMessage(`a new blog ${title} by ${author} updated`)
-
-          setTimeout(() => {
-            setMessage(null)
-          }, 5000)
-
-          getBlogs()
-        })
-        .catch((e) => {
-          console.error(e)
-          setError(e.response.data.error)
-
-          setTimeout(() => {
-            setError(null)
-          }, 5000)
-        })
+      updateBlogMutation.mutate({ ...blog, likes: 'true' })
     }
   }
 
@@ -135,76 +101,65 @@ const App = () => {
     console.log('handleDelete', blog)
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       blogService
-        .deleteItem(blog.id)
+        .deleteItem(blog)
         .then((response) => {
           console.log('response', response)
-          setMessage(`${blog.title} by ${blog.author} is deleted!!`)
-          setTimeout(() => {
-            setMessage(null)
-          }, 5000)
 
-          getBlogs()
+          dispatch({
+            type: 'SUCCESS',
+            payload: `${blog.title} by ${blog.author} is deleted!!`,
+          })
+          setTimeout(() => {
+            dispatch({
+              type: 'CLEAR',
+            })
+          }, 5000)
         })
         .catch((e) => {
           console.error(e)
-          setError(e.response.data.error)
+
+          dispatch({
+            type: 'ERROR',
+            payload: e.response.data.error,
+          })
 
           setTimeout(() => {
-            setError(null)
+            dispatch({
+              type: 'CLEAR',
+            })
           }, 5000)
         })
     }
   }
 
-  useEffect(() => {
-    getBlogs()
-  }, [])
+  const { isLoading, isError, data, error } = useQuery(
+    'blogs',
+    blogService.getAll
+  )
+  console.log('isLoading, isError, data ', isLoading, isError, data, error)
 
-  useEffect(() => {
-    console.log('user', user)
-  }, [user])
-
-  const loginForm = () => {
-    return (
-      <div>
-        <h2> Log in to application </h2>
-        {message ? (
-          <h3 className='message'> {message} </h3>
-        ) : error ? (
-          <h3 className='error'> {error} </h3>
-        ) : (
-          <h3 className='no_message'></h3>
-        )}
-        <Login
-          handleSubmit={handleSubmit}
-          setUserName={setUserName}
-          setPassword={setPassword}
-        />
-      </div>
-    )
+  if (isLoading) {
+    return <div>loading data...</div>
   }
 
-  const blogList = () => {
-    const hideWhenVisible = {
-      display: createVisible ? 'none' : '',
-    }
-    const showWhenVisible = {
-      display: createVisible ? '' : 'none',
-    }
+  if (isError) {
+    return <div>blog service not available due to problems in server</div>
+  }
 
+  const blogs = data
+
+  console.log('notification', notification)
+
+  if (notification && 'user' in notification && notification.user) {
     return (
       <div>
         <h2> blogs </h2>
-        {message ? (
-          <h3 className='message'> {message} </h3>
-        ) : error ? (
-          <h3 className='error'> {error} </h3>
-        ) : (
-          <h3 className='no_message'></h3>
-        )}
-        <div className='blog_username'>
+
+        <Message message={notification.message} error={notification.error} />
+
+        <div className="blog_username">
           <h3>
-            {user.username} logged in
+            {notification.user.username} logged in
             <button onClick={handleLogout}> logout </button>
           </h3>
         </div>
@@ -226,17 +181,19 @@ const App = () => {
             blog={blog}
             handleBlogLike={handleBlogLike}
             handleDelete={handleDelete}
-            user={user}
+            user={notification.user}
           />
         ))}
       </div>
     )
-  }
-
-  if (user === null) {
-    return loginForm()
   } else {
-    return blogList()
+    return (
+      <div>
+        <h2> Log in to application </h2>
+        <Message message={notification.message} error={notification.error} />
+        <Login dispatch={dispatch} />
+      </div>
+    )
   }
 }
 

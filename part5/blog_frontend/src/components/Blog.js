@@ -20,15 +20,15 @@ const Blog = ({ blog, handleBlogLike, handleDelete, user }) => {
   //const hideWhenVisible = { display: viewVisible ? 'none' : '' };
   const showWhenVisible = { display: viewVisible ? '' : 'none' }
   return (
-    <div style={blogStyle} className='blog'>
+    <div style={blogStyle} className="blog">
       {blog.title} {blog.author}
       <button
         onClick={() => setViewVisible(!viewVisible)}
-        className='togglableContent showBtn'
+        className="togglableContent showBtn"
       >
         {viewVisible ? 'hide' : 'view'}
       </button>
-      <div className='content' style={showWhenVisible}>
+      <div className="content" style={showWhenVisible}>
         <p>{blog.url}</p>
         <p>
           likes {blog.likes.length}
@@ -45,7 +45,7 @@ const Blog = ({ blog, handleBlogLike, handleDelete, user }) => {
         </p>
         <p>{blog.author}</p>
         {user && user.username === blog.user.username ? (
-          <button onClick={() => handleDelete(blog)} className='deleteBtn'>
+          <button onClick={() => handleDelete(blog)} className="deleteBtn">
             remove
           </button>
         ) : (

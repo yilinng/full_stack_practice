@@ -16,18 +16,23 @@ const getAll = async () => {
 }
 
 const createItem = async (newObject) => {
-  console.log('token', token)
   const request = axios.post(baseUrl, newObject, axiosConfig)
   return request.then((response) => response.data)
 }
 
-const updateItem = async (id, newObject) => {
-  const request = axios.put(`${baseUrl}/${id}`, newObject, axiosConfig)
+const updateItem = async (newObject) => {
+  console.log(`token ${token}`)
+
+  const request = axios.put(
+    `${baseUrl}/${newObject.id}`,
+    newObject,
+    axiosConfig
+  )
   return request.then((response) => response.data)
 }
 
-const deleteItem = async (id) => {
-  const request = axios.delete(`${baseUrl}/${id}`, axiosConfig)
+const deleteItem = async (newObject) => {
+  const request = axios.delete(`${baseUrl}/${newObject.id}`, axiosConfig)
   return request.then((response) => response.data)
 }
 

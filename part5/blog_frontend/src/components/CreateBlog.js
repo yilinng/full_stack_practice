@@ -18,41 +18,41 @@ const CreateBlog = ({ handleCreate, createBlogSuccess }) => {
     <div>
       <h2>Create new</h2>
       <form onSubmit={(event) => handleCreate(event, title, author, url)}>
-        <div className='form-title'>
-          <label htmlFor='title'>title: </label>
+        <div className="form-title">
+          <label htmlFor="title">title: </label>
           <input
-            type='text'
-            name='title'
-            id='title'
+            type="text"
+            name="title"
+            id="title"
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
-        <div className='form-author'>
-          <label htmlFor='author'>author: </label>
+        <div className="form-author">
+          <label htmlFor="author">author: </label>
           <input
-            type='text'
-            name='author'
-            id='author'
+            type="text"
+            name="author"
+            id="author"
             required
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
           />
         </div>
-        <div className='form-url'>
-          <label htmlFor='url'>url: </label>
+        <div className="form-url">
+          <label htmlFor="url">url: </label>
           <input
-            type='text'
-            name='url'
-            id='url'
+            type="text"
+            name="url"
+            id="url"
             required
             value={url}
             onChange={(e) => setUrl(e.target.value)}
           />
         </div>
-        <div className='form-button'>
-          <input type='submit' value='create' className='create_Btn' />
+        <div className="form-button">
+          <input type="submit" value="create" className="create_Btn" />
         </div>
       </form>
     </div>

@@ -1,8 +1,10 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-//const User = require("../models/user");
+const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 const { userExtractor, tokenExtractor } = require('../utils/middleware')
+
+//const BSON = require('bson')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user')
@@ -30,6 +32,8 @@ blogsRouter.post(
     const user = request.user
     // const user = await User.findById(decodedToken.id);
 
+    console.log('user', user)
+
     const blog = new Blog({
       title: title,
       author: author,
@@ -39,7 +43,11 @@ blogsRouter.post(
     })
 
     const savedBlog = await blog.save()
-    user.blogs = user.blogs.concat(savedBlog._id)
+    if ('blogs' in user) {
+      user.blogs = user.blogs.concat(savedBlog._id)
+    } else {
+      user['blogs'] = [savedBlog._id]
+    }
     await user.save()
 
     response.status(201).json(savedBlog)
@@ -68,7 +76,14 @@ blogsRouter.delete(
       return response.status(404).json({ error: 'blog id is not valid.' })
 
     if (blog.user.toString() === user._id.toString()) {
+      // const nid = new BSON.ObjectId(request.params.id)
+      const filteredBlogs = user.blogs.filter(
+        (item) => item.toString() !== request.params.id
+      )
+      console.log('filteredBlogs', filteredBlogs)
       await Blog.findByIdAndRemove(request.params.id)
+      await User.findByIdAndUpdate(user._id, { blogs: filteredBlogs })
+
       response.status(204).end()
     }
   }
