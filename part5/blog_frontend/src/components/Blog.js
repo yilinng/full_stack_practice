@@ -1,34 +1,64 @@
-import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useParams } from 'react-router-dom'
+import { useState } from 'react'
+import { useMutation, useQueryClient } from 'react-query'
+import blogService from '../services/blogs'
+import Message from './Message'
 
-const Blog = ({ blog, handleBlogLike, handleDelete, user }) => {
-  const [viewVisible, setViewVisible] = useState(false)
+const Blog = ({
+  blogs,
+  handleBlogLike,
+  handleDelete,
+  notification,
+  dispatch,
+}) => {
+  const [comment, setComment] = useState('')
+  const id = useParams().id
 
-  console.log('blog', blog)
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
+  const blog = blogs.find((n) => n.id === id)
 
   const checkLike = () => {
     return blog.likes.includes(blog.user.id)
   }
 
-  //const hideWhenVisible = { display: viewVisible ? 'none' : '' };
-  const showWhenVisible = { display: viewVisible ? '' : 'none' }
+  const queryClient = useQueryClient()
+
+  const updateBlogMutation = useMutation(blogService.updateComment, {
+    onSuccess: (updateBlog) => {
+      const blogs = queryClient.getQueryData('blogs')
+      const filterBlogs = blogs.filter((blog) => blog.id !== updateBlog.id)
+
+      queryClient.setQueriesData('blogs', filterBlogs.concat(updateBlog))
+
+      setComment('')
+      dispatch({
+        type: 'SUCCESS',
+        payload: `a new blog ${updateBlog.title} by ${updateBlog.author} updated`,
+      })
+
+      setTimeout(() => {
+        dispatch({
+          type: 'CLEAR',
+        })
+        setCreateBlogSuccess(false)
+      }, 5000)
+    },
+  })
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    console.log('handleSubmit comment', comment)
+    updateBlogMutation.mutate({ ...blog, comment })
+  }
+
   return (
-    <div style={blogStyle} className="blog">
-      {blog.title} {blog.author}
-      <button
-        onClick={() => setViewVisible(!viewVisible)}
-        className="togglableContent showBtn"
-      >
-        {viewVisible ? 'hide' : 'view'}
-      </button>
-      <div className="content" style={showWhenVisible}>
+    <div className="blog">
+      <h3>blog app</h3>
+      <Message message={notification.message} error={notification.error} />
+      <h2>
+        {blog.title} {blog.author}
+      </h2>
+      <div className="content">
         <p>{blog.url}</p>
         <p>
           likes {blog.likes.length}
@@ -44,13 +74,30 @@ const Blog = ({ blog, handleBlogLike, handleDelete, user }) => {
           </button>
         </p>
         <p>{blog.author}</p>
-        {user && user.username === blog.user.username ? (
+        {notification.user &&
+        notification.user.username === blog.user.username ? (
           <button onClick={() => handleDelete(blog)} className="deleteBtn">
             remove
           </button>
         ) : (
           ''
         )}
+      </div>
+      <div>
+        <h4>comments</h4>
+        <form onSubmit={handleSubmit}>
+          <input value={comment} onChange={(e) => setComment(e.target.value)} />
+          <button>add comment</button>
+        </form>
+        <ul>
+          {blog.comments.length ? (
+            blog.comments.map((comment, index) => (
+              <li key={index}>{comment}</li>
+            ))
+          ) : (
+            <div>no comments</div>
+          )}
+        </ul>
       </div>
     </div>
   )
@@ -60,6 +107,7 @@ Blog.prototype = {
   blog: PropTypes.object.isRequired,
   handleBlogLike: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,
+  notification: PropTypes.object.isRequired,
 }
 
 export default Blog

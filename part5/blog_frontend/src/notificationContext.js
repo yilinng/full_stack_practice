@@ -36,6 +36,10 @@ const notificationReducer = (state = initialState, action) => {
 
       return initialState
     }
+    case 'TOKEN_SUCCESS': {
+      initialState.user = action.payload
+      return initialState
+    }
     default:
       return initialState
   }

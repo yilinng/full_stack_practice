@@ -1,11 +1,16 @@
 import { useState, useContext } from 'react'
 import NotificationContext from './notificationContext'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Users from './components/Users'
+import UserBlog from './components/UserBlog'
+import Home from './components/Home'
 import Blog from './components/Blog'
-import CreateBlog from './components/CreateBlog'
-import Login from './components/Login'
+import Navbar from './components/Navbar'
+
 import blogService from './services/blogs'
-import Message from './components/Message'
+import userService from './services/users'
+
 import './index.css'
 
 const App = () => {
@@ -14,8 +19,6 @@ const App = () => {
 
   const [createVisible, setCreateVisible] = useState(false)
   const [createBlogSuccess, setCreateBlogSuccess] = useState(false)
-  const [message, setMessage] = useState('')
-  const [err, setErr] = useState('')
 
   const hideWhenVisible = {
     display: createVisible ? 'none' : '',
@@ -25,8 +28,6 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    // console.log('handleLogout')
-
     const token = localStorage.getItem('token')
 
     dispatch({
@@ -37,18 +38,19 @@ const App = () => {
     localStorage.removeItem('token')
   }
 
-  const sortBlogs = () => {
-    return blogs.sort((a, b) => b.likes.length - a.likes.length)
-  }
-
   const newBlogMutation = useMutation(blogService.createItem, {
     onSuccess: (newBlog) => {
       const blogs = queryClient.getQueryData('blogs')
-      queryClient.setQueryData('blogs', blogs.concat(newBlog))
+
+      if (blogs.length) {
+        queryClient.setQueryData('blogs', blogs.concat(newBlog))
+      }
       dispatch({
         type: 'SUCCESS',
         payload: `a new blog ${newBlog.title} by ${newBlog.author} added`,
       })
+
+      setCreateBlogSuccess(true)
 
       setTimeout(() => {
         dispatch({
@@ -72,7 +74,10 @@ const App = () => {
 
   const updateBlogMutation = useMutation(blogService.updateItem, {
     onSuccess: (updateBlog) => {
-      //const blogs = queryClient.getQueryData('blogs')
+      const blogs = queryClient.getQueryData('blogs')
+      const filterBlogs = blogs.filter((blog) => blog.id !== updateBlog.id)
+
+      queryClient.setQueriesData('blogs', filterBlogs.concat(updateBlog))
       dispatch({
         type: 'SUCCESS',
         payload: `a new blog ${updateBlog.title} by ${updateBlog.author} updated`,
@@ -97,39 +102,65 @@ const App = () => {
     }
   }
 
+  const deleteBlogMutation = useMutation(blogService.deleteItem, {
+    onSuccess: (deleteBlog) => {
+      console.log('deleteBlog', deleteBlog)
+      const blogs = queryClient.getQueryData('blogs')
+      console.log('delete success blogs', blogs)
+
+      const filteredBlog = blogs.filter((blog) => blog.id !== deleteBlog.id)
+      console.log('delete success  filteredBlog', filteredBlog)
+
+      queryClient.setQueriesData('blogs', filteredBlog)
+      dispatch({
+        type: 'SUCCESS',
+        payload: `${deleteBlog.title} by ${deleteBlog.author} is deleted!!`,
+      })
+
+      setTimeout(() => {
+        dispatch({
+          type: 'CLEAR',
+        })
+        setCreateBlogSuccess(false)
+      }, 5000)
+    },
+    onError: (err) => {
+      console.log('delete err', err)
+    },
+  })
+
   const handleDelete = (blog) => {
-    console.log('handleDelete', blog)
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      blogService
-        .deleteItem(blog)
-        .then((response) => {
-          console.log('response', response)
-
-          dispatch({
-            type: 'SUCCESS',
-            payload: `${blog.title} by ${blog.author} is deleted!!`,
-          })
-          setTimeout(() => {
-            dispatch({
-              type: 'CLEAR',
-            })
-          }, 5000)
-        })
-        .catch((e) => {
-          console.error(e)
-
-          dispatch({
-            type: 'ERROR',
-            payload: e.response.data.error,
-          })
-
-          setTimeout(() => {
-            dispatch({
-              type: 'CLEAR',
-            })
-          }, 5000)
-        })
+    if (window.confirm(`Do you want to delete ${blog.title} ?`)) {
+      deleteBlogMutation.mutate(blog)
     }
+  }
+
+  /*
+  const token = localStorage.getItem('token')
+
+  const getUserDataWithToken = useQuery('users', userService.getUserWithToken)
+
+  if (token) {
+    console.log('getUserDataWithToken', getUserDataWithToken)
+    if (getUserDataWithToken.isLoading) {
+      return <div>loading data...</div>
+    }
+
+    if (getUserDataWithToken.isError) {
+      return <div>blog service not available due to problems in server</div>
+    }
+
+    dispatch({
+      type: 'TOKEN_SUCCESS',
+      payload: getUserDataWithToken.data,
+    })
+  }
+*/
+  //get usersdata
+  const getUserData = useQuery('users', userService.getAllUsers)
+
+  if (notification && notification.user) {
+    console.log('getUserData', getUserData)
   }
 
   const { isLoading, isError, data, error } = useQuery(
@@ -150,51 +181,53 @@ const App = () => {
 
   console.log('notification', notification)
 
-  if (notification && 'user' in notification && notification.user) {
-    return (
-      <div>
-        <h2> blogs </h2>
+  return (
+    <Router>
+      <Navbar
+        notification={notification}
+        handleLogout={handleLogout}
+        dispatch={dispatch}
+      />
+      <Routes>
+        <Route
+          path="/blogs/:id"
+          element={
+            <Blog
+              blogs={blogs}
+              handleBlogLike={handleBlogLike}
+              handleDelete={handleDelete}
+              notification={notification}
+              dispatch={dispatch}
+            />
+          }
+        />
+        <Route path="/users" element={<Users users={getUserData.data} />} />
+        <Route
+          path="/users/:id"
+          element={<UserBlog users={getUserData.data} />}
+        />
+        <Route
+          path="/"
+          element={
+            <Home
+              setCreateVisible={setCreateVisible}
+              hideWhenVisible={hideWhenVisible}
+              showWhenVisible={showWhenVisible}
+              createBlogSuccess={createBlogSuccess}
+              handleCreate={handleCreate}
+              notification={notification}
+              blogs={blogs}
+              dispatch={dispatch}
+            />
+          }
+        />
+      </Routes>
 
-        <Message message={notification.message} error={notification.error} />
-
-        <div className="blog_username">
-          <h3>
-            {notification.user.username} logged in
-            <button onClick={handleLogout}> logout </button>
-          </h3>
-        </div>
-        <div style={hideWhenVisible}>
-          <button onClick={() => setCreateVisible(true)}>
-            create new blog
-          </button>
-        </div>
-        <div style={showWhenVisible}>
-          <CreateBlog
-            handleCreate={handleCreate}
-            createBlogSuccess={createBlogSuccess}
-          />
-          <button onClick={() => setCreateVisible(false)}> cancel </button>
-        </div>
-        {sortBlogs().map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            handleBlogLike={handleBlogLike}
-            handleDelete={handleDelete}
-            user={notification.user}
-          />
-        ))}
-      </div>
-    )
-  } else {
-    return (
       <div>
-        <h2> Log in to application </h2>
-        <Message message={notification.message} error={notification.error} />
-        <Login dispatch={dispatch} />
+        <i>Blogs app, Department of Computer Science 2023</i>
       </div>
-    )
-  }
+    </Router>
+  )
 }
 
 export default App

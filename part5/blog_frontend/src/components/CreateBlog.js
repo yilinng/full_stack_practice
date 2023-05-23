@@ -67,6 +67,7 @@ CreateBlog.prototype = {
   title: PropTypes.string.isRequired,
   author: PropTypes.string.isRequired,
   url: PropTypes.string.isRequired,
+  createBlogSuccess: PropTypes.bool.isRequired,
 }
 
 export default CreateBlog

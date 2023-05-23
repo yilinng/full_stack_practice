@@ -1,6 +1,6 @@
-import React from 'react'
+import PropTypes from 'prop-types'
 
-export default function Message({ message, error }) {
+const Message = ({ message, error }) => {
   return (
     <div>
       {message ? (
@@ -13,3 +13,10 @@ export default function Message({ message, error }) {
     </div>
   )
 }
+
+Message.prototype = {
+  message: PropTypes.string.isRequired,
+  error: PropTypes.string.isRequired,
+}
+
+export default Message

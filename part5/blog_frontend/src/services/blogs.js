@@ -31,9 +31,14 @@ const updateItem = async (newObject) => {
   return request.then((response) => response.data)
 }
 
+const updateComment = async (newObject) => {
+  const request = axios.put(`${baseUrl}/${newObject.id}/comments`, newObject)
+  return request.then((response) => response.data)
+}
+
 const deleteItem = async (newObject) => {
   const request = axios.delete(`${baseUrl}/${newObject.id}`, axiosConfig)
   return request.then((response) => response.data)
 }
 
-export default { getAll, createItem, updateItem, deleteItem }
+export default { getAll, createItem, updateItem, updateComment, deleteItem }

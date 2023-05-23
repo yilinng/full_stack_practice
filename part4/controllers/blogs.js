@@ -4,8 +4,6 @@ const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 const { userExtractor, tokenExtractor } = require('../utils/middleware')
 
-//const BSON = require('bson')
-
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user')
   response.json(blogs)
@@ -89,6 +87,7 @@ blogsRouter.delete(
   }
 )
 
+//update like
 blogsRouter.put(
   '/:id',
   tokenExtractor,
@@ -129,5 +128,33 @@ blogsRouter.put(
     }
   }
 )
+
+//update comments
+blogsRouter.put('/:id/comments', async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+  console.log('blog', blog)
+  const comment = request.body.comment
+  const newBlog = {
+    title: blog.title,
+    author: blog.author,
+    url: blog.url,
+    likes: blog.likes,
+    user: blog.user,
+    comments: [...blog.comments, comment],
+  }
+
+  console.log('newBlog', newBlog)
+
+  const from_response = await Blog.findByIdAndUpdate(
+    request.params.id,
+    newBlog,
+    {
+      new: true,
+      runValidators: true,
+      context: 'query',
+    }
+  )
+  response.json(from_response)
+})
 
 module.exports = blogsRouter

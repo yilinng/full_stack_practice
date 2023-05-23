@@ -39,7 +39,7 @@ const App = () => {
       retry: false,
     }
   )
-  console.log(error)
+  console.log(error, data)
 
   if (isLoading) {
     return <div>loading data...</div>

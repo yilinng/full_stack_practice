@@ -3,12 +3,13 @@ import { useMutation } from 'react-query'
 import PropTypes from 'prop-types'
 import userService from '../services/users'
 
-const Login = ({ setUser, dispatch }) => {
+const Login = ({ dispatch }) => {
   const [username, setUserName] = useState('')
   const [password, setPassword] = useState('')
 
   const loginMutation = useMutation(userService.logIn, {
     onSuccess: (data) => {
+      console.log(data)
       //const users = queryClient.getQueryData('users')
       //queryClient.setQueryData('users', users.concat(newUser))
       dispatch({
@@ -75,9 +76,7 @@ const Login = ({ setUser, dispatch }) => {
 }
 
 Login.prototype = {
-  handleSubmit: PropTypes.func.isRequired,
-  setUserName: PropTypes.func.isRequired,
-  setPassword: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired,
 }
 
 export default Login
