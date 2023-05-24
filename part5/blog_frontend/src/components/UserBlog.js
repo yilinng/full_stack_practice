@@ -7,15 +7,17 @@ const UserBlog = ({ users }) => {
   console.log('users', users)
   const user = users.find((n) => n.id === id)
   return (
-    <div>
-      <h2>{user.username}</h2>
+    <div className="user_blog_content">
+      <h2 className="username">{user.username}</h2>
 
-      <h3>added blogs</h3>
-      <ul>
-        {user.blogs.map((blog, index) => (
-          <li key={index}>{blog.title}</li>
-        ))}
-      </ul>
+      <h3 className="addedblogs">added blogs</h3>
+      <div className="blog_list">
+        <ul>
+          {user.blogs.map((blog, index) => (
+            <li key={index}>{blog.title}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }

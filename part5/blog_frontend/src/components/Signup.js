@@ -4,23 +4,31 @@ import PropTypes from 'prop-types'
 import userService from '../services/users'
 import '../index.css'
 
-const Login = ({ dispatch }) => {
+const Signup = ({ dispatch }) => {
   const [username, setUserName] = useState('')
+  const [name, setName] = useState('')
+
   const [password, setPassword] = useState('')
 
-  const loginMutation = useMutation(userService.logIn, {
+  const signupMutation = useMutation(userService.signUp, {
     onSuccess: (data) => {
       console.log(data)
       //const users = queryClient.getQueryData('users')
       //queryClient.setQueryData('users', users.concat(newUser))
       dispatch({
-        type: 'LOGIN_SUCCESS',
-        payload: data,
+        type: 'SIGNUP_SUCCESS',
+        payload: `${data.username} sign up success!! please login.`,
       })
-      // console.log('from login success', data)
-      localStorage.setItem('token', data.token)
+
       setUserName('')
+      setName('')
       setPassword('')
+
+      setTimeout(() => {
+        dispatch({
+          type: 'CLEAR',
+        })
+      }, 1000)
     },
     onError: (error) => {
       // console.log('error', error)
@@ -42,10 +50,11 @@ const Login = ({ dispatch }) => {
 
     const pass_user = {
       username,
+      name,
       password,
     }
 
-    loginMutation.mutate(pass_user)
+    signupMutation.mutate(pass_user)
   }
   return (
     <form onSubmit={(event) => handleSubmit(event)}>
@@ -57,6 +66,16 @@ const Login = ({ dispatch }) => {
           id="username"
           required
           onChange={(e) => setUserName(e.target.value)}
+        />
+      </div>
+      <div className="form-name">
+        <label htmlFor="name"> name: </label>
+        <input
+          type="text"
+          name="name"
+          id="name"
+          required
+          onChange={(e) => setName(e.target.value)}
         />
       </div>
       <div className="form-password">
@@ -76,8 +95,8 @@ const Login = ({ dispatch }) => {
   )
 }
 
-Login.prototype = {
+Signup.prototype = {
   dispatch: PropTypes.func.isRequired,
 }
 
-export default Login
+export default Signup

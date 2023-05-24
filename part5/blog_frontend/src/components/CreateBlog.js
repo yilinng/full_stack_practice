@@ -15,7 +15,7 @@ const CreateBlog = ({ handleCreate, createBlogSuccess }) => {
   }, [createBlogSuccess])
 
   return (
-    <div>
+    <div className="create_blog">
       <h2>Create new</h2>
       <form onSubmit={(event) => handleCreate(event, title, author, url)}>
         <div className="form-title">

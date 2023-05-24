@@ -5,26 +5,28 @@ import '../index.css'
 const Users = ({ users }) => {
   return (
     <div className="users">
-      <h2>Users</h2>
+      <h2 className="title">Users</h2>
 
-      <table className="user_table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>blogs created</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td>
-                <Link to={`/users/${user.id}`}>{user.username}</Link>
-              </td>
-              <td>{user.blogs.length}</td>
+      <div className="table">
+        <table className="user_table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>blogs created</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id}>
+                <td>
+                  <Link to={`/users/${user.id}`}>{user.username}</Link>
+                </td>
+                <td>{user.blogs.length}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

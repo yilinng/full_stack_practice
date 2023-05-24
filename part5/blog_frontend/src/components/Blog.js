@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import blogService from '../services/blogs'
 import Message from './Message'
+import '../index.css'
 
 const Blog = ({
   blogs,
@@ -53,9 +54,9 @@ const Blog = ({
 
   return (
     <div className="blog">
-      <h3>blog app</h3>
+      <h3 className="blog_title">blog app</h3>
       <Message message={notification.message} error={notification.error} />
-      <h2>
+      <h2 className="title">
         {blog.title} {blog.author}
       </h2>
       <div className="content">
@@ -83,7 +84,7 @@ const Blog = ({
           ''
         )}
       </div>
-      <div>
+      <div className="commentList">
         <h4>comments</h4>
         <form onSubmit={handleSubmit}>
           <input value={comment} onChange={(e) => setComment(e.target.value)} />

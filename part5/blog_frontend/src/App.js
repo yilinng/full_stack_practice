@@ -134,28 +134,6 @@ const App = () => {
       deleteBlogMutation.mutate(blog)
     }
   }
-
-  /*
-  const token = localStorage.getItem('token')
-
-  const getUserDataWithToken = useQuery('users', userService.getUserWithToken)
-
-  if (token) {
-    console.log('getUserDataWithToken', getUserDataWithToken)
-    if (getUserDataWithToken.isLoading) {
-      return <div>loading data...</div>
-    }
-
-    if (getUserDataWithToken.isError) {
-      return <div>blog service not available due to problems in server</div>
-    }
-
-    dispatch({
-      type: 'TOKEN_SUCCESS',
-      payload: getUserDataWithToken.data,
-    })
-  }
-*/
   //get usersdata
   const getUserData = useQuery('users', userService.getAllUsers)
 
@@ -183,47 +161,48 @@ const App = () => {
 
   return (
     <Router>
-      <Navbar
-        notification={notification}
-        handleLogout={handleLogout}
-        dispatch={dispatch}
-      />
-      <Routes>
-        <Route
-          path="/blogs/:id"
-          element={
-            <Blog
-              blogs={blogs}
-              handleBlogLike={handleBlogLike}
-              handleDelete={handleDelete}
-              notification={notification}
-              dispatch={dispatch}
-            />
-          }
+      <div className="container">
+        <Navbar
+          notification={notification}
+          handleLogout={handleLogout}
+          dispatch={dispatch}
         />
-        <Route path="/users" element={<Users users={getUserData.data} />} />
-        <Route
-          path="/users/:id"
-          element={<UserBlog users={getUserData.data} />}
-        />
-        <Route
-          path="/"
-          element={
-            <Home
-              setCreateVisible={setCreateVisible}
-              hideWhenVisible={hideWhenVisible}
-              showWhenVisible={showWhenVisible}
-              createBlogSuccess={createBlogSuccess}
-              handleCreate={handleCreate}
-              notification={notification}
-              blogs={blogs}
-              dispatch={dispatch}
-            />
-          }
-        />
-      </Routes>
-
-      <div>
+        <Routes>
+          <Route
+            path="/blogs/:id"
+            element={
+              <Blog
+                blogs={blogs}
+                handleBlogLike={handleBlogLike}
+                handleDelete={handleDelete}
+                notification={notification}
+                dispatch={dispatch}
+              />
+            }
+          />
+          <Route path="/users" element={<Users users={getUserData.data} />} />
+          <Route
+            path="/users/:id"
+            element={<UserBlog users={getUserData.data} />}
+          />
+          <Route
+            path="/"
+            element={
+              <Home
+                setCreateVisible={setCreateVisible}
+                hideWhenVisible={hideWhenVisible}
+                showWhenVisible={showWhenVisible}
+                createBlogSuccess={createBlogSuccess}
+                handleCreate={handleCreate}
+                notification={notification}
+                blogs={blogs}
+                dispatch={dispatch}
+              />
+            }
+          />
+        </Routes>
+      </div>
+      <div className="footer">
         <i>Blogs app, Department of Computer Science 2023</i>
       </div>
     </Router>

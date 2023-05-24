@@ -1,3 +1,14 @@
+* {
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
 .message {
   color: green;
@@ -44,6 +55,8 @@
 .navbar {
   display: flex;
   background-color: #eee;
+  justify-content: space-around;
+  padding: 10px 0;
 }
 
 .navbar div {
@@ -62,11 +75,12 @@
 
 .navbar .navbar_log  {
   display: flex;
+  align-items: center;
 }
 
 .navbar .navbar_log  button{
   margin-left: 10px;
-  padding: 15px;
+  padding: 10px;
   font-size: 20px;
   background-color: forestgreen;
   color: white;
@@ -82,6 +96,20 @@
   border-radius: 20px;
 }
 
+/*users page*/
+.users {
+  display: grid;
+}
+
+.users .title {
+  text-align: center;
+  font-size: 30px;
+}
+
+.users .table {
+  margin: auto;
+}
+
 .user_table {
   font-family: Arial, Helvetica, sans-serif;
   border-collapse: collapse;
@@ -92,13 +120,336 @@
   border: 1px solid #ddd;
   padding: 8px;
 }
+
+
 /*home */
+
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home h2 {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.home .createBtn, .home .cancel_Btn {
+ margin: 10px auto;
+} 
+
+.home .createBtn button{
+  background-color: #45a049;
+  border: 1px solid #45a049;
+  padding: 10px 12px;
+  font-size: 17px;
+  color: white;
+  border-radius: 7%;
+  cursor: pointer;
+}
+
+
+ .home .cancel_Btn{
+  display: flex;
+  justify-content: center;
+  background-color: orangered;
+  border: 1px solid orangered;
+  padding: 10px 12px;
+  font-size: 17px;
+  color: white;
+  border-radius: 7%;
+  cursor: pointer;
+ }
+
 
 
 .home .blogList div{
   padding: 10px;
   border: 1px solid;
-  margin-bottom: 5px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 5px auto;
+}
+
+.home .create_blog {
+  padding: 10px;
+  border: none;
+  width: 100%;
+  border-radius: 5px;
+  box-shadow: 1px 2px 3px 4px rgba(12,12,12,0.2);
+}
+
+.home .create_blog h2{
+  text-align: center;
+  font-size: 40px;
+}
+
+
+.home .create_blog div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px auto;
+}
+
+
+.home .create_blog  input[type=text], select {
+  width: 70%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.home .create_blog input[type=submit] {
+  width: 80%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 25px;
+}
+
+
+/*login_page*/
+.login_signup {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+.login_signup .hide {
+  display: none;
+  
+}
+
+.login_signup .login_page {
+  margin: 5%;
+  width: 60%;
+  background-color: white;
+}
+
+.login_signup .login_page h1{
+  text-align: center;
+  font-size: 40px;
+}
+
+.login_signup .login_page input[type=text], select {
+  width: 70%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.login_signup .login_page input[type=password], select {
+  width: 70%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.login_signup .login_page input[type=submit] {
+  width: 35%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 25px;
+}
+
+.login_signup .login_page input[type=submit]:hover {
+  background-color: #45a049;
+}
+
+.login_signup .login_page div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login_signup .signup_page {
+  width: 40%;
+  background-color: #ddd;
+  border: 1px solid #ddd;
+}
+
+.login_signup .signup_page h1{
+  text-align: center;
+  margin-top: 20%;
+}
+
+.login_signup .signup_page h3{
+  text-align: center;
+}
+
+.login_signup .signup_page .signBtn{
+ display: flex;
+ justify-content: center;
+}
+
+.login_signup .signup_page .signBtn  button{
+  text-align: center;
+  padding: 5px 10px;
+  font-size: 20px;
+}
+
+.login_signup .show_signup_page {
+  width: 65%;
+}
+
+.login_signup .show_signup_page h1{
+  text-align: center;
+  margin-top: 10%;
+
+}
+
+.login_signup .show_signup_page div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login_signup .show_signup_page input[type=text], select{
+  width: 70%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.login_signup .show_signup_page input[type=password], select{
+  width: 70%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.login_signup .show_signup_page input[type=submit] {
+  width: 35%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 25px;
+}
+
+.login_signup .show_signup_page input[type=submit]:hover {
+  background-color: #45a049;
+}
+
+/*blog page*/
+
+.blog {
+  display: grid;
+  margin: 5% ;
+}
+
+
+.blog .title, .blog_title{
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.blog .content{
+  text-align: center;
+  font-size: 20px;
+}
+
+.blog .commentList {
+  margin: auto;
+  
+}
+
+.blog .commentList ul{
+  margin: 10px auto;
+}
+
+.blog .commentList ul li{
+  margin: 10px auto;
+}
+
+/*users blog page*/
+.user_blog_content {
+  display: grid;
+}
+
+.user_blog_content > * {
+  margin: 10px auto;
+}
+
+.user_blog_content .username {
+  font-size: 30px;
+}
+
+.user_blog_content .addedblogs {
+  font-size: 27px;
+}
+
+.user_blog_content .blog_list ul{
+  width: 500px;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 1px 2px 3px 4px rgba(12,12,12,0.2);
+}
+
+.user_blog_content .blog_list li{
+  margin: 10px;
+  font-size: 20px;
+ }
+
+/*footer*/
+
+.footer {
+  background-color: #eee;
+  padding: 10px;
+  text-align: center;
+  margin: 0;
+  display: block;
+}
+
+
+
+
+@media screen and (max-width: 600px) {
+  .login_signup {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+
+  .login_signup .login_page {
+    margin: 5% auto;
+    width: auto;
+  }
+
+  .login_signup .signup_page {
+    width: auto;
+  }
+
+  .login_signup .show_signup_page{
+    width: auto;
+  }
 }

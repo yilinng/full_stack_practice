@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import PropTypes from 'prop-types'
 import CreateBlog from './CreateBlog'
 import Message from './Message'
 import Login from './Login'
 import { Link } from 'react-router-dom'
 import '../index.css'
+import Signup from './Signup'
 
 const Home = ({
   setCreateVisible,
@@ -15,6 +17,8 @@ const Home = ({
   blogs,
   dispatch,
 }) => {
+  const [showSignup, setShowSignup] = useState(false)
+
   const sortBlogs = () => {
     return blogs.sort((a, b) => b.likes.length - a.likes.length)
   }
@@ -26,7 +30,7 @@ const Home = ({
 
         <Message message={notification.message} error={notification.error} />
 
-        <div style={hideWhenVisible}>
+        <div style={hideWhenVisible} className="createBtn">
           <button onClick={() => setCreateVisible(true)}>
             create new blog
           </button>
@@ -36,7 +40,12 @@ const Home = ({
             handleCreate={handleCreate}
             createBlogSuccess={createBlogSuccess}
           />
-          <button onClick={() => setCreateVisible(false)}>cancel</button>
+          <button
+            className="cancel_Btn"
+            onClick={() => setCreateVisible(false)}
+          >
+            cancel
+          </button>
         </div>
         <div className="blogList">
           {blogs.length &&
@@ -52,10 +61,51 @@ const Home = ({
     )
   } else {
     return (
-      <div>
-        <h2> Log in to application </h2>
-        <Message message={notification.message} error={notification.error} />
-        <Login dispatch={dispatch} />
+      <div className="login_signup">
+        {showSignup ? (
+          ''
+        ) : (
+          <div className="login_page">
+            <h1> Login to Your application </h1>
+            <Message
+              message={notification.message}
+              error={notification.error}
+            />
+            <Login dispatch={dispatch} />
+          </div>
+        )}
+        <div className={showSignup ? 'show signup_page' : 'signup_page'}>
+          <h1>
+            {showSignup
+              ? 'If you already has an account, just sign in.'
+              : 'New Here?'}
+          </h1>
+
+          <h3>
+            {showSignup
+              ? ''
+              : 'sign up and discover a great amount of new Information!'}
+          </h3>
+
+          <div className="signBtn">
+            <button type="button" onClick={() => setShowSignup(!showSignup)}>
+              {showSignup ? 'log in' : 'sign up'}
+            </button>
+          </div>
+        </div>
+        {showSignup ? (
+          <div className="show_signup_page">
+            <h1>Create your Account </h1>
+            <Message
+              message={notification.message}
+              error={notification.error}
+            />
+
+            <Signup dispatch={dispatch} />
+          </div>
+        ) : (
+          ''
+        )}
       </div>
     )
   }

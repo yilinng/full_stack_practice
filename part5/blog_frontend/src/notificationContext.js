@@ -27,6 +27,12 @@ const notificationReducer = (state = initialState, action) => {
 
       return initialState
     }
+
+    case 'SIGNUP_SUCCESS': {
+      initialState.message = action.payload
+
+      return initialState
+    }
     case 'LOGIN_SUCCESS': {
       initialState.user = action.payload
       return initialState
