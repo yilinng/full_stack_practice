@@ -6,6 +6,9 @@ import Select from 'react-select'
 const Authors = ({ show, authors, setError }) => {
   console.log('authors', authors)
 
+  const token = localStorage.getItem('phonenumbers-user-token')
+  console.log('token', token)
+
   const options = authors.map((author) => {
     let value = author.name
     let label = author.name
@@ -17,7 +20,7 @@ const Authors = ({ show, authors, setError }) => {
   })
 
   console.log('options', options)
-  //const [name, setName] = useState('')
+
   const [selectedName, setSelectedName] = useState(null)
   const [setBornTo, setSetBornTo] = useState('')
 
@@ -66,28 +69,32 @@ const Authors = ({ show, authors, setError }) => {
           ))}
         </tbody>
       </table>
-      <h2>Set birthyear</h2>
-      <form onSubmitCapture={handleSubmit}>
-        <div className='div_name'>
-          <label htmlFor='name'>name: </label>
-          <Select
-            defaultValue={selectedName}
-            onChange={setSelectedName}
-            options={options}
-          />
-        </div>
-        <div className='div_born'>
-          <label htmlFor='setBornTo'>born:</label>
-          <input
-            type='text'
-            onChange={(e) => setSetBornTo(e.target.value)}
-            value={setBornTo}
-          />
-        </div>
-        <div className='input_btn'>
-          <input type='submit' value='update author' />
-        </div>
-      </form>
+      {token && (
+        <>
+          <h2>Set birthyear</h2>
+          <form onSubmitCapture={handleSubmit}>
+            <div className='div_name'>
+              <label htmlFor='name'>name: </label>
+              <Select
+                defaultValue={selectedName}
+                onChange={setSelectedName}
+                options={options}
+              />
+            </div>
+            <div className='div_born'>
+              <label htmlFor='setBornTo'>born:</label>
+              <input
+                type='text'
+                onChange={(e) => setSetBornTo(e.target.value)}
+                value={setBornTo}
+              />
+            </div>
+            <div className='input_btn'>
+              <input type='submit' value='update author' />
+            </div>
+          </form>
+        </>
+      )}
     </div>
   )
 }
