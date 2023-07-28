@@ -1,5 +1,5 @@
 const logger = require('./logger')
-const User = require('../models/user')
+const User = require('../../../angular-app/server/src/models/user')
 const jwt = require('jsonwebtoken')
 
 const requestLogger = (request, response, next) => {

@@ -12,6 +12,8 @@ import {
 const router = express.Router()
 
 interface PatientRequest extends Request {
+  body: { type: any }
+  params: any
   patient?: PatientEntry
 }
 
