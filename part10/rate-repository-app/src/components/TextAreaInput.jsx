@@ -5,7 +5,6 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 2,
     fontSize: 20,
-    height: 50,
     backgroundColor: 'white',
     marginBottom: 10,
   },
@@ -19,11 +18,13 @@ const styles = StyleSheet.create({
   },
 })
 //https://stackoverflow.com/questions/44739331/change-react-native-textinputs-placeholder-color
-const TextInput = ({ style, error, ...props }) => {
+const TextAreaInput = ({ error, ...props }) => {
   // const textInputStyle = [style]
   //console.log('error', error)
   return (
     <NativeTextInput
+      multiline={true}
+      rows={10}
       style={error ? styles.inputError : styles.input}
       {...props}
       placeholderTextColor='#A9A9A9'
@@ -31,4 +32,4 @@ const TextInput = ({ style, error, ...props }) => {
   )
 }
 
-export default TextInput
+export default TextAreaInput

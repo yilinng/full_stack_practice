@@ -1,25 +1,22 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
-  FlatList,
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   Image,
-  Button,
+  Pressable,
 } from 'react-native'
+import { useNavigate } from 'react-router-native'
 
 const RepositoryItem = ({ item }) => {
-  // const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff'
-  // const color = item.id === selectedId ? 'white' : 'black'
+  const navigate = useNavigate()
 
   const handleK = (nb) => {
     if (nb > 1000) {
       let k = nb / 1000
 
-      //  console.log('k', k, k.toFixed(1), '' + k.toFixed(1).slice(-1))
+      // console.log('k', k, k.toFixed(1), '' + k.toFixed(1).slice(-1))
       //last number is 0
       let lastNb = '' + k.toFixed(1).slice(-1)
       if (lastNb === '0') {
@@ -31,53 +28,76 @@ const RepositoryItem = ({ item }) => {
     return nb
   }
 
+  const truncateText = (text) => {
+    if (text && text.length > 60) {
+      return text.substring(0, 60) + '...'
+    }
+    return text
+  }
+
+  const handleToItem = (item) => {
+    // console.log('handleToItem ', `${item.id}`)
+    navigate(`${item.id}`)
+  }
+
   //console.log('RepositoryItem ', item)
   return (
-    <View style={styles.container}>
-      <View style={styles.flexContainer}>
-        <Image style={styles.stretch} source={item.ownerAvatarUrl} />
+    <Pressable onPress={() => handleToItem(item)}>
+      <View style={styles.container} testID='repositoryItem'>
+        <View style={styles.flexContainer}>
+          <Image
+            style={styles.stretch}
+            source={{
+              uri: item.ownerAvatarUrl,
+            }}
+          />
 
-        <View style={styles.flexContainerText}>
-          <Text style={{ fontWeight: 'bold', fontSize: 25, marginBottom: 10 }}>
-            {item.fullName}
-          </Text>
-          <Text style={{ color: 'gray', marginBottom: 10, fontSize: 16 }}>
-            {item.description}
-          </Text>
-          <Button style={styles.button} title={item.language} />
+          <View style={styles.flexContainerText}>
+            <Text
+              style={{ fontWeight: 'bold', fontSize: 22, marginBottom: 10 }}
+            >
+              {item.fullName}
+            </Text>
+            <Text style={{ color: 'gray', marginBottom: 10, fontSize: 15 }}>
+              {truncateText(item.description)}
+            </Text>
+            <Pressable>
+              <Text style={styles.button}>{item.language}</Text>
+            </Pressable>
+          </View>
+        </View>
+
+        <View style={styles.flexContainerNb}>
+          <View>
+            <Text style={styles.flexContainerNbText}>
+              {handleK(item.stargazersCount)}
+            </Text>
+            <Text style={styles.flexContainerNbText1}>Stars</Text>
+          </View>
+
+          <View>
+            <Text style={styles.flexContainerNbText}>
+              {handleK(item.forksCount)}
+            </Text>
+            <Text style={styles.flexContainerNbText1}>Forks</Text>
+          </View>
+
+          <View>
+            <Text style={styles.flexContainerNbText}>
+              {handleK(item.reviewCount)}
+            </Text>
+            <Text style={styles.flexContainerNbText1}>Reviews</Text>
+          </View>
+
+          <View>
+            <Text style={styles.flexContainerNbText}>
+              {handleK(item.ratingAverage)}
+            </Text>
+            <Text style={styles.flexContainerNbText1}>Rating</Text>
+          </View>
         </View>
       </View>
-
-      <View style={styles.flexContainerNb}>
-        <View>
-          <Text style={styles.flexContainerNbText}>
-            {handleK(item.stargazersCount)}
-          </Text>
-          <Text style={styles.flexContainerNbText1}>Stars</Text>
-        </View>
-
-        <View>
-          <Text style={styles.flexContainerNbText}>
-            {handleK(item.forksCount)}
-          </Text>
-          <Text style={styles.flexContainerNbText1}>Forks</Text>
-        </View>
-
-        <View>
-          <Text style={styles.flexContainerNbText}>
-            {handleK(item.reviewCount)}
-          </Text>
-          <Text style={styles.flexContainerNbText1}>Reviews</Text>
-        </View>
-
-        <View>
-          <Text style={styles.flexContainerNbText}>
-            {handleK(item.ratingAverage)}
-          </Text>
-          <Text style={styles.flexContainerNbText1}>Rating</Text>
-        </View>
-      </View>
-    </View>
+    </Pressable>
   )
 }
 
@@ -86,16 +106,16 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: StatusBar.currentHeight || 0,
     backgroundColor: 'white',
-    height: 300,
+    maxHeight: 300,
   },
   flexContainer: {
     flexDirection: 'row',
-    height: 150,
+    maxHeight: 170,
+    alignItems: 'center',
   },
   flexContainerNb: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'center',
   },
   flexContainerNbText: {
     fontSize: 18,
@@ -118,14 +138,18 @@ const styles = StyleSheet.create({
   stretch: {
     width: 70,
     height: 70,
-    resizeMode: 'stretch',
     borderRadius: 2,
     margin: 15,
   },
   button: {
+    maxWidth: 120,
+    textAlign: 'center',
     color: 'white',
-    backgroundColor: 'blue',
-    margin: 'auto',
+    backgroundColor: '#1E90FF',
+    padding: 5,
+    fontSize: 18,
+    fontWeight: '700',
+    borderRadius: 7,
   },
 })
 
