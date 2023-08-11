@@ -4,7 +4,7 @@ import SignUpForm from './SignUpForm'
 import * as yup from 'yup'
 import useCreateUser from '../hooks/useCreateUser'
 import { useNavigate } from 'react-router-native'
-import { Alert, ActivityIndicator, StyleSheet, View } from 'react-native'
+import { Alert } from 'react-native'
 const initialValues = {
   username: '',
   password: '',
