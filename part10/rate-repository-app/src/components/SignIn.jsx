@@ -4,7 +4,7 @@ import * as yup from 'yup'
 import useSignIn from '../hooks/useSignIn'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-native'
-import { Alert } from 'react-native'
+import { Alert, View, ActivityIndicator, StyleSheet } from 'react-native'
 
 const initialValues = {
   username: '',
@@ -22,9 +22,8 @@ const validationSchema = yup.object().shape({
     .required('Password is required'),
 })
 
-export const SignInContainer = ({ onSubmit, error, errMsg }) => {
-  /*
-  if (!error && loading) {
+export const SignInContainer = ({ onSubmit, error, loading, errMsg }) => {
+  if (!error && !errMsg && loading) {
     return (
       <View>
         <ActivityIndicator
@@ -38,7 +37,7 @@ export const SignInContainer = ({ onSubmit, error, errMsg }) => {
       </View>
     )
   }
-  */
+
   return (
     <Formik
       initialValues={initialValues}
@@ -56,14 +55,18 @@ const SignIn = () => {
   const [signIn, result, error] = useSignIn()
   const [loading, setLoading] = useState(false)
   const [clickBtn, setClickBtn] = useState(false)
+  /*
+  when error appear, device show timeout,error and data does not appear.
+  replace error with errMsg, you can check result.
+  */
   const [errMsg, setErrMsg] = useState('')
   const navigate = useNavigate()
 
-  console.log('error sign in', error)
+  console.log('result sign in', error)
 
   useEffect(() => {
     if (clickBtn && error === '') {
-      console.log('click btn , error null!!')
+      console.log(`click btn, error === ''!!`)
       setErrMsg('Invalid username or password.')
     }
   }, [clickBtn, error])
@@ -75,13 +78,14 @@ const SignIn = () => {
           text: 'Continue',
           onPress: () => {
             setLoading(false)
-            setClickBtn(false)
             navigate('/')
           },
         },
       ])
     }
     if (result.data) {
+      setClickBtn(false)
+      setErrMsg('')
       accessToken()
     }
   }, [result.data])

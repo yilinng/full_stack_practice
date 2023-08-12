@@ -12,7 +12,7 @@ const FilterList = ({ filteredResults }) => {
   const navigate = useNavigate()
   const [value] = useDebounce(filteredResults, 800)
 
-  console.log('FilterList filteredResults ', value)
+  // console.log('FilterList filteredResults ', value)
 
   const handleToItem = (item) => {
     setTimeout(() => {
@@ -50,10 +50,14 @@ const RepositoryPick = ({
   filteredResults,
   isPress,
   xIsPress,
-  //  passVal,
+  loading,
+  searchText,
 }) => {
+  console.log('data from searchText', searchText)
+
+  //https://github.com/jaredpalmer/formik/issues/1748
   const initialValues = {
-    searchText: '',
+    searchText: searchText,
   }
 
   return (
@@ -74,7 +78,7 @@ const RepositoryPick = ({
             isPress={isPress}
             xIsPress={xIsPress}
             values={values}
-            //passVal={passVal}
+            loading={loading}
           />
         )}
       </Formik>

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { DELETE_REVIEW } from '../graphqL/mutations'
 
 const useDeleteReview = () => {
-  const [error, setError] = useState('')
+  const [error, setError, loading] = useState('')
   const [mutate, result] = useMutation(DELETE_REVIEW, {
     onError: (error) => {
       const messages = error.graphQLErrors[0].message
@@ -20,7 +20,7 @@ const useDeleteReview = () => {
     console.log('data from deleteReview', data)
   }
 
-  return [deleteReview, result, error]
+  return { deleteReview, result, error, loading }
 }
 
 export default useDeleteReview

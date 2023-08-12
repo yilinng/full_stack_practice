@@ -1,17 +1,13 @@
-import {
-  View,
-  Pressable,
-  StyleSheet,
-  Text,
-  Keyboard,
-  TouchableWithoutFeedback,
-} from 'react-native'
+import { View, Pressable, StyleSheet, Text } from 'react-native'
 import FormikTextInput from './FormikTextInput'
+import { DismissKeyboard } from './tool/DismissKeyboard'
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
-    maxHeight: 350,
+    // maxHeight: 450,
+    flex: 1,
+    justifyContent: 'center',
   },
   container1: {
     backgroundColor: 'white',
@@ -45,41 +41,42 @@ const styles = StyleSheet.create({
 const SignInForm = ({ onSubmit, error, errMsg }) => {
   //https://snack.expo.dev/@kalleilv/formik-example
   //https://stackoverflow.com/questions/29337444/how-do-you-style-a-textinput-in-react-native-for-password-input
-
+  //https://stackoverflow.com/questions/29685421/hide-keyboard-in-react-native
   return (
-    <View style={styles.container}>
-      <View style={styles.container1}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <FormikTextInput
-            name='username'
-            placeholder='Username'
-            style={styles.formInput}
-          />
-        </TouchableWithoutFeedback>
-
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <FormikTextInput
-            name='password'
-            placeholder='Password'
-            secureTextEntry={true}
-          />
-        </TouchableWithoutFeedback>
-
-        {error || errMsg ? (
+    <DismissKeyboard>
+      <View style={styles.container}>
+        <View style={styles.container1}>
           <View>
-            <Text style={styles.errorText}>{error || errMsg}</Text>
+            <FormikTextInput
+              name='username'
+              placeholder='Username'
+              style={styles.formInput}
+            />
+            <FormikTextInput
+              name='password'
+              placeholder='Password'
+              secureTextEntry={true}
+            />
           </View>
-        ) : (
-          <View style={styles.defaultErrorText}>
-            <Text>Invalid username or password</Text>
-          </View>
-        )}
 
-        <Pressable onPress={onSubmit}>
-          <Text style={styles.Btn}>sign In</Text>
-        </Pressable>
+          {error || errMsg ? (
+            <View>
+              <Text style={styles.errorText}>{error || errMsg}</Text>
+            </View>
+          ) : (
+            <View style={styles.defaultErrorText}>
+              <Text>Invalid username or password</Text>
+            </View>
+          )}
+
+          <Pressable onPress={onSubmit}>
+            <View>
+              <Text style={styles.Btn}>sign In</Text>
+            </View>
+          </Pressable>
+        </View>
       </View>
-    </View>
+    </DismissKeyboard>
   )
 }
 

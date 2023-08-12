@@ -22,13 +22,12 @@ export const RepositoryListContainer = ({ repositories, onEndReach }) => {
   const [filteredResults, setFilteredResults] = useState([])
   const [isPress, setIsPress] = useState(false)
   const [xIsPress, setXIsPress] = useState(false)
-  //const [passVal, setPassVal] = useState('')
 
   //https://www.npmjs.com/package/use-debounce
   //https://usehooks.com/usedebounce
-
   const [value] = useDebounce(searchText, 500)
-  const { data } = useSearchKeyword({
+  //https://github.com/jaredpalmer/formik/issues/1748
+  const { data, loading } = useSearchKeyword({
     searchKeyword: value,
   })
 
@@ -42,24 +41,26 @@ export const RepositoryListContainer = ({ repositories, onEndReach }) => {
     ? repositories.edges.map((edge) => edge.node)
     : []
 
-  //console.log('repositoryNodes', repositoryNodes)
   useEffect(() => {
     handleOrder({ selectedOrder, repositoryNodes })
   }, [selectedOrder])
 
-  const handleValueChange = (values) => {
-    console.log('init handleChange', values)
+  useEffect(() => {
+    console.log('filteredResults', filteredResults)
+    // setFilteredResults(repositories)
+  }, [filteredResults])
 
+  const handleValueChange = (values) => {
     if (values.searchText && repositoryNodes) {
       const filterById = repositoryNodes.filter((node) =>
         node.id.includes(values.searchText)
       )
 
-      console.log('filterById', filterById)
+      console.log('filterById', filterById.length)
       //react state change cause  Formik value reset
       setTimeout(() => {
         console.log('init 800s run', values)
-        //setFilteredResults(filterById)
+        // setFilteredResults(filterById)
       }, 800)
     }
   }
@@ -73,7 +74,7 @@ export const RepositoryListContainer = ({ repositories, onEndReach }) => {
 
       setTimeout(() => {
         setIsPress(false)
-      }, 300)
+      }, 500)
     }
   }
   //https://stackoverflow.com/questions/55583815/formik-how-to-reset-form-after-confirmation
@@ -84,20 +85,15 @@ export const RepositoryListContainer = ({ repositories, onEndReach }) => {
       values = {}
       setFilteredResults([])
       setXIsPress(true)
+      setSearchText('')
 
       setTimeout(() => {
         setXIsPress(false)
-      }, 300)
+      }, 500)
     }
   }
 
   const handleData = () => {
-    /*
-    if (isPress) {
-      // console.log('filteredResults', filteredResults)
-      return filteredResults
-    }
-    */
     return handleOrder({ selectedOrder, repositoryNodes })
   }
 
@@ -122,8 +118,9 @@ export const RepositoryListContainer = ({ repositories, onEndReach }) => {
           filteredResults={filteredResults}
           isPress={isPress}
           xIsPress={xIsPress}
-          keyboardShouldPersistTaps='always'
-          //passVal={passVal}
+          setIsPress={setIsPress}
+          loading={loading}
+          searchText={searchText}
         />
       )}
       onEndReached={onEndReach}
@@ -135,8 +132,6 @@ export const RepositoryListContainer = ({ repositories, onEndReach }) => {
 const RepositoryList = () => {
   const { repositories, loading, fetchMore } = useRepositories({ first: 8 })
 
-  //console.log('repositories', repositories)
-
   const onEndReach = () => {
     fetchMore
   }
@@ -147,8 +142,9 @@ const RepositoryList = () => {
         <ActivityIndicator
           style={{
             ...StyleSheet.absoluteFill,
-            justifyContent: 'center',
             alignItems: 'center',
+            flexDirection: 'column',
+            marginTop: 250,
           }}
           size='large'
         />
@@ -160,6 +156,7 @@ const RepositoryList = () => {
     <RepositoryListContainer
       repositories={repositories}
       onEndReach={onEndReach}
+      loading={loading}
     />
   )
 }

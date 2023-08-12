@@ -80,7 +80,7 @@ const ReviewItem = ({ review, handleDelete }) => {
 const MyReview = () => {
   //https://www.apollographql.com/docs/react/data/queries/#refetching
   const { data, loading, refetch } = useGetCurrentUser({ includeReviews: true })
-  const [deleteReview] = useDeleteReview()
+  const { deleteReview } = useDeleteReview()
 
   const reviews = data ? data.me.reviews.edges.map((edge) => edge.node) : []
 
@@ -112,8 +112,9 @@ const MyReview = () => {
         <ActivityIndicator
           style={{
             ...StyleSheet.absoluteFill,
-            justifyContent: 'center',
             alignItems: 'center',
+            flexDirection: 'column',
+            marginTop: 250,
           }}
           size='large'
         />

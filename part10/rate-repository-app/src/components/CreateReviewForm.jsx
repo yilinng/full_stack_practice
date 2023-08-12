@@ -1,6 +1,7 @@
 import { View, Pressable, StyleSheet, Text } from 'react-native'
 import FormikTextInput from './FormikTextInput'
 import FormikTextAreaInput from './FormikTextAreaInput'
+import { DismissKeyboard } from './tool/DismissKeyboard'
 
 const styles = StyleSheet.create({
   container: {
@@ -37,44 +38,55 @@ const styles = StyleSheet.create({
   },
 })
 
-const CreateReviewForm = ({ onSubmit, error }) => {
+const CreateReviewForm = ({ onSubmit, error, errMsg }) => {
   //https://snack.expo.dev/@kalleilv/formik-example
   //https://stackoverflow.com/questions/29337444/how-do-you-style-a-textinput-in-react-native-for-password-input
   //https://stackoverflow.com/questions/41678570/what-is-an-alternative-of-textarea-in-react-native
   return (
-    <View style={styles.container}>
-      <View style={styles.container1}>
-        <FormikTextInput
-          name='ownerName'
-          placeholder='Repository owner name'
-          style={styles.formInput}
-        />
-        <FormikTextInput name='repositoryName' placeholder='Repository name' />
-        <FormikTextInput name='rating' placeholder='Rating between 0 and 100' />
-
-        <FormikTextAreaInput
-          name='text'
-          placeholder='review text maximum 2000 characters'
-        />
-        {error ? (
+    <DismissKeyboard>
+      <View style={styles.container}>
+        <View style={styles.container1}>
           <View>
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        ) : (
-          <View>
-            <Text style={styles.defaultErrorText}>
-              Invalid ownerName or repositoryName or rating
-            </Text>
-          </View>
-        )}
+            <FormikTextInput
+              name='ownerName'
+              placeholder='Repository owner name'
+              style={styles.formInput}
+            />
+            <FormikTextInput
+              name='repositoryName'
+              placeholder='Repository name'
+            />
+            <FormikTextInput
+              name='rating'
+              placeholder='Rating between 0 and 100'
+            />
 
-        <Pressable onPress={onSubmit}>
-          <View style={styles.BtnDiv}>
-            <Text style={styles.Btn}>Create a review</Text>
+            <FormikTextAreaInput
+              name='text'
+              placeholder='review text maximum 2000 characters'
+            />
           </View>
-        </Pressable>
+
+          {error || errMsg ? (
+            <View>
+              <Text style={styles.errorText}>{error || errMsg}</Text>
+            </View>
+          ) : (
+            <View>
+              <Text style={styles.defaultErrorText}>
+                Invalid ownerName or repositoryName or rating or review
+              </Text>
+            </View>
+          )}
+
+          <Pressable onPress={onSubmit}>
+            <View style={styles.BtnDiv}>
+              <Text style={styles.Btn}>Create a review</Text>
+            </View>
+          </Pressable>
+        </View>
       </View>
-    </View>
+    </DismissKeyboard>
   )
 }
 

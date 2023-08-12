@@ -4,7 +4,7 @@ import * as yup from 'yup'
 import useCreateReview from '../hooks/useCreateReview'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-native'
-import { Alert, ActivityIndicator, View, StyleSheet } from 'react-native'
+import { Alert } from 'react-native'
 
 const initialValues = {
   ownerName: '',
@@ -24,10 +24,9 @@ const validationSchema = yup.object().shape({
   text: yup.string().max(2000, 'review text maximum 2000 characters'),
 })
 
-export const CreateReviewContainer = ({ onSubmit, error, loading }) => {
-  console.log('CreateReview error', error)
-
-  if (!error && loading) {
+export const CreateReviewContainer = ({ onSubmit, error, errMsg }) => {
+  /*
+  if (!error && !errMsg && loading) {
     return (
       <View>
         <ActivityIndicator
@@ -41,7 +40,7 @@ export const CreateReviewContainer = ({ onSubmit, error, loading }) => {
       </View>
     )
   }
-
+  */
   return (
     <Formik
       initialValues={initialValues}
@@ -49,19 +48,35 @@ export const CreateReviewContainer = ({ onSubmit, error, loading }) => {
       validationSchema={validationSchema}
     >
       {({ handleSubmit }) => (
-        <CreateReviewForm onSubmit={handleSubmit} error={error} />
+        <CreateReviewForm
+          onSubmit={handleSubmit}
+          error={error}
+          errMsg={errMsg}
+        />
       )}
     </Formik>
   )
 }
 
 const CreateReview = () => {
-  const [loading, setLoading] = useState(false)
+  // const [loading, setLoading] = useState(false)
+  const [clickBtn, setClickBtn] = useState(false)
+  const [errMsg, setErrMsg] = useState('')
 
   const [createReview, result, error] = useCreateReview()
   const navigate = useNavigate()
 
   //console.log('CreateReview error', error)
+
+  useEffect(() => {
+    console.log(' clickBtn error', error)
+    console.log(' clickBtn errMsg', errMsg)
+
+    if (clickBtn && error === '') {
+      console.log('click btn , error null!!')
+      setErrMsg('Invalid ownerName or repositoryName or rating or review')
+    }
+  }, [clickBtn, error, errMsg])
 
   useEffect(() => {
     const accessToken = () => {
@@ -72,9 +87,8 @@ const CreateReview = () => {
           {
             text: 'Continue',
             onPress: () => {
-              setLoading(true)
+              //setLoading(false)
               navigate('/')
-              setLoading(false)
             },
           },
         ]
@@ -82,6 +96,7 @@ const CreateReview = () => {
     }
 
     if (result.data) {
+      setClickBtn(false)
       accessToken()
     }
   }, [result.data])
@@ -91,23 +106,27 @@ const CreateReview = () => {
 
     const { ownerName, repositoryName, rating, text } = values
     try {
+      setErrMsg('')
+      setClickBtn(true)
       await createReview({
         ownerName,
         repositoryName,
         rating: Number(rating),
         text,
       })
+
+      setClickBtn(false)
+
+      // setLoading(true)
+      setErrMsg('')
     } catch (e) {
+      setClickBtn(false)
       console.log('onSubmit error', e)
     }
   }
 
   return (
-    <CreateReviewContainer
-      onSubmit={onSubmit}
-      error={error}
-      loading={loading}
-    />
+    <CreateReviewContainer onSubmit={onSubmit} error={error} errMsg={errMsg} />
   )
 }
 
